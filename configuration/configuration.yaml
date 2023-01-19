@@ -1,0 +1,50 @@
+# Usecase example
+esphome:
+  name: Lights
+
+esp8266:
+  board: esp01_1m
+
+i2c:
+  sda: 2
+  scl: 0
+
+pcf8574:
+  - id: 'pcf8574_hub'
+    address: 0x3F
+    pcf8575: false
+
+# Pin 0 to 3 are connected to the relays
+switch:
+  - platform: gpio
+    name: "Bedroom lights"
+    id: bedroom_lights
+    pin:
+      pcf8574: pcf8574_hub
+      number: 0
+      mode:
+        output: true
+      inverted: false
+  - platform: gpio
+    name: "Room lights"
+    id: room_lights
+    pin:
+      pcf8574: pcf8574_hub
+      number: 1
+      mode:
+        output: true
+      inverted: false
+
+# Pin 4 to 7 are meant to be used as inputs to manually turn on/off the lights
+binary_sensor:
+  - platform: gpio
+    name: "Bedroom switch"
+    pin:
+      pcf8574: pcf8574_hub
+      number: 4
+      mode:
+        input: true
+      inverted: true
+    on_press:
+      then:
+        switch.toggle: bedroom_lights
